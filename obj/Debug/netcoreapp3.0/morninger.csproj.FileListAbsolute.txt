@@ -1,0 +1,15 @@
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger.deps.json
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger.runtimeconfig.json
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger.runtimeconfig.dev.json
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger.dll
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/morninger.pdb
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/Newtonsoft.Json.dll
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/Telegram.Bot.dll
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.csprojAssemblyReference.cache
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.AssemblyInfoInputs.cache
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.AssemblyInfo.cs
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.csproj.CopyComplete
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.dll
+/home/egor/Projects/morninger/obj/Debug/netcoreapp3.0/morninger.pdb
+/home/egor/Projects/morninger/bin/Debug/netcoreapp3.0/CsvHelper.dll
