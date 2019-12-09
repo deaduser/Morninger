@@ -37,19 +37,36 @@ namespace morninger
 
         private static string ProcessMessage(Statistic s, Telegram.Bot.Types.User user, string message)
         {
-            if (message == "/statistic") return ShowStatistic(s, user);
-            if (message == "/done" || message == "/undone" || message == "/ill")
+            var command = ToCommand(message);
+            if (command == Command.Unknown) return null;
+            if (command == Command.Statistic) return ShowStatistic(s, user);
+
+            if (s.LastSeen == DateTime.UtcNow.ToString("yy/MM/dd")) return "Today has already been updated";
+            s.LastSeen = DateTime.UtcNow.ToString("yy/MM/dd");
+
+            switch (command)
             {
-                if (s.LastSeen == DateTime.UtcNow.ToString("yy/MM")) return "Today has already been updated";
-                s.LastSeen = DateTime.UtcNow.ToString("yy/MM");
-                switch (message)
-                {
-                    case "/done": s.Done++; return null;
-                    case "/undone": s.Undone++; return null;
-                    case "/ill": s.Ill++; return null;
-                }
+                case Command.Done:
+                    s.Done++;
+                    return null;
+                case Command.Undone:
+                    s.Undone++;
+                    return null;
+                case Command.Ill:
+                    s.Ill++;
+                    return null;
             }
+
             return null;
+        }
+
+        static private Command ToCommand(string message)
+        {
+            if (message.StartsWith("/statistic")) return Command.Statistic;
+            else if (message.StartsWith("/done")) return Command.Done;
+            else if (message.StartsWith("/undone")) return Command.Undone;
+            else if (message.StartsWith("/ill")) return Command.Ill;
+            return Command.Unknown;
         }
 
         private static List<Statistic> ReadStatisticsFromFile()
