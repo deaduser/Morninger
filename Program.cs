@@ -26,7 +26,8 @@
         {
             if (e.Message.Text == null) return;
             if (!e.Message.Text.StartsWith("/")) return;
-
+            
+            Logger.Log($"{DateTime.Now}: {e.Message.From.FirstName} {e.Message.Text}");
             var answer = DataHelper.ProcessCommand(e.Message);
             if (answer == null) return;
             SendMessage(e.Message.Chat.Id, answer);

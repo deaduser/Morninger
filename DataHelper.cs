@@ -24,7 +24,7 @@ namespace morninger
 
         internal static string ShowStatistic(Statistic s, Telegram.Bot.Types.User user)
         {
-            return $"{s.UserName}:\nDone - {s.Done},\nUndone - {s.Undone},\nIll - {s.Ill}";
+            return $"UserName,Done,Undone,Ill\n{s.UserName},{s.Done},{s.Undone},{s.Ill}";
         }
 
         private static Statistic RegisteNewStatistic(List<Statistic> statistics, Telegram.Bot.Types.User user)
@@ -71,8 +71,8 @@ namespace morninger
 
         private static List<Statistic> ReadStatisticsFromFile()
         {
-            Directory.CreateDirectory("statistics");
-            var path = $"statistics/{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}.csv";
+            Directory.CreateDirectory("../'statistics");
+            var path = $"../statistics/{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}.csv";
             if (!File.Exists(path))
             {
                 CreateFile(path, "UserId,UserName,LastSeen,Done,Undone,Ill");
@@ -89,8 +89,8 @@ namespace morninger
 
         private static void SaveStatisticIntoFile(List<Statistic> records)
         {
-            Directory.CreateDirectory("statistics");
-            var path = $"statistics/{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}.csv";
+            Directory.CreateDirectory("../statistics");
+            var path = $"../statistics/{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}.csv";
             CreateFile(path, "UserId,UserName,LastSeen,Done,Undone,Ill");
 
             using(var f = File.Open(path, FileMode.Open, FileAccess.Write))
