@@ -9,7 +9,7 @@ namespace morninger
 
     internal static class DataHelper
     {
-        internal static string ProcessMessage(Telegram.Bot.Types.Message message)
+        internal static string ProcessCommand(Telegram.Bot.Types.Message message)
         {
             var statistics = ReadStatisticsFromFile();
             var statistic = statistics.FirstOrDefault(o => o.UserId == message.From.Id);

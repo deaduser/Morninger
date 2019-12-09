@@ -12,25 +12,22 @@
 
         static void Main(string[] args)
         {
-            var httpProxy = new WebProxy(Address: "70.169.132.131:48678");
-            botClient = new TelegramBotClient("995252338:AAE0SzILY9wBPeM5KmHsbFNtPZMr8AhvYXo", httpProxy);
+            var webProxy = Console.ReadLine();
+            var botId = Console.ReadLine();
+            var httpProxy = new WebProxy(webProxy);
+            botClient = new TelegramBotClient(botId, httpProxy);
             botClient.SetWebhookAsync("");
             botClient.OnMessage += onMessage;
             botClient.StartReceiving();
-
-            do
-            {
-                Console.WriteLine("Input 'exit' for closing");
-            }
-            while (Console.ReadLine() == "exit");
+            while (Console.ReadLine() != "Exit") ;
         }
 
         static void onMessage(object sender, MessageEventArgs e)
         {
-            if (e.Message.Text == null || e.Message.Chat.Title == null)return;
-            if (!e.Message.Text.StartsWith("/"))return;
+            if (e.Message.Text == null) return;
+            if (!e.Message.Text.StartsWith("/")) return;
 
-            var answer = DataHelper.ProcessMessage(e.Message);
+            var answer = DataHelper.ProcessCommand(e.Message);
             if (answer == null) return;
             SendMessage(e.Message.Chat.Id, answer);
         }
