@@ -1,17 +1,42 @@
-﻿namespace morninger
+﻿namespace Morninger
 {
     using System.Net;
     using System;
-
     using Telegram.Bot.Args;
     using Telegram.Bot;
+    using DataLayer;
+    using System.IO;
+    using Models;
+    using System.Linq;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Configuration.FileExtensions;
+    using Microsoft.Extensions.Configuration.Json;
 
     class Program
     {
         static ITelegramBotClient botClient;
+        static IConfiguration config;
 
         static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+            Console.WriteLine($" Hello { config["DBConnectionString"] } !");
+
+            using (var db = new MorningerBotContext())
+            {
+                db.Add(new Setting { Name = "Test" });
+                db.SaveChanges();
+                var s = db.Settings.OrderBy(b => b.Name).First();
+                Console.WriteLine($"Settings name: {s.Name}");
+            }
+
             var webProxy = Console.ReadLine();
             var botId = Console.ReadLine();
             var httpProxy = new WebProxy(webProxy);
@@ -26,7 +51,7 @@
         {
             if (e.Message.Text == null) return;
             if (!e.Message.Text.StartsWith("/")) return;
-            
+
             Logger.Log($"{DateTime.Now}: {e.Message.From.FirstName} {e.Message.Text}");
             var answer = DataHelper.ProcessCommand(e.Message);
             if (answer == null) return;
@@ -37,5 +62,7 @@
         {
             await botClient.SendTextMessageAsync(chatId, message);
         }
+
+
     }
 }

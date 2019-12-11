@@ -1,4 +1,4 @@
-namespace morninger
+namespace Morninger.Services
 {
     using System.Collections.Generic;
     using System.IO;
@@ -6,10 +6,11 @@ namespace morninger
     using System;
 
     using CsvHelper;
+    using Enums;
 
-    internal static class DataHelper
+    internal  static class DataHelper
     {
-        internal static string ProcessCommand(Telegram.Bot.Types.Message message)
+        internal  static string ProcessCommand(Telegram.Bot.Types.Message message)
         {
             var statistics = ReadStatisticsFromFile();
             var statistic = statistics.FirstOrDefault(o => o.UserId == message.From.Id);
@@ -22,7 +23,7 @@ namespace morninger
             return answer;
         }
 
-        internal static string ShowStatistic(Statistic s, Telegram.Bot.Types.User user)
+        internal  static string ShowStatistic(Statistic s, Telegram.Bot.Types.User user)
         {
             return $"UserName,Done,Undone,Ill\n{s.UserName},{s.Done},{s.Undone},{s.Ill}";
         }

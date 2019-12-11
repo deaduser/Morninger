@@ -1,6 +1,6 @@
-namespace morninger
+namespace Morninger.Enums
 {
-    public enum Command
+    internal enum Command
     {
         Statistic,
         Done,

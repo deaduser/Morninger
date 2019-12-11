@@ -1,11 +1,11 @@
-namespace morninger
+namespace Morninger.Services
 {
     using System.IO;
     using System;
 
-    internal static class Logger
+    internal  static class Logger
     {
-        internal static void Log(string line)
+        internal  static void Log(string line)
         {
             Directory.CreateDirectory("../log");
             var path = $"../log/{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}{DateTime.UtcNow.Day}.txt";

@@ -1,25 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/egor/Projects/morninger/morninger.csproj": {}
+    "D:\\morninger\\morninger.csproj": {}
   },
   "projects": {
-    "/home/egor/Projects/morninger/morninger.csproj": {
+    "D:\\morninger\\morninger.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/egor/Projects/morninger/morninger.csproj",
+        "projectUniqueName": "D:\\morninger\\morninger.csproj",
         "projectName": "morninger",
-        "projectPath": "/home/egor/Projects/morninger/morninger.csproj",
-        "packagesPath": "/home/egor/.nuget/packages/",
-        "outputPath": "/home/egor/Projects/morninger/obj/",
+        "projectPath": "D:\\morninger\\morninger.csproj",
+        "packagesPath": "C:\\Users\\edomozhirov\\.nuget\\packages\\",
+        "outputPath": "D:\\morninger\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/home/egor/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\edomozhirov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,6 +45,28 @@
               "target": "Package",
               "version": "[12.2.2, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
             "Telegram.Bot": {
               "target": "Package",
               "version": "[15.1.0, )"
@@ -55,18 +82,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[3.0.0, 3.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.0.101/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

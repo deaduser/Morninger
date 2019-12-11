@@ -1,4 +1,4 @@
-namespace morninger
+namespace Morninger
 {
     public class Statistic
     {
