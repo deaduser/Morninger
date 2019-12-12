@@ -12,7 +12,7 @@ namespace Morninger.Services
     {
         internal  string ProcessCommand(Telegram.Bot.Types.Message message)
         {
-           
+           return "";
         }
     }
 }

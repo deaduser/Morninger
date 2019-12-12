@@ -11,23 +11,24 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Configuration.FileExtensions;
     using Microsoft.Extensions.Configuration.Json;
+    using Services;
+    using Settings;
 
-    class Program
+    public class Program
     {
-        static ITelegramBotClient botClient;
-        static IConfiguration config;
+        internal static ITelegramBotClient botClient;
+        internal static IConfigurationRoot Configuration;
+        internal static Storage Storage;
+
 
         static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
+            Storage = new Storage();
+            Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json", true, true).Build();
 
-            config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
-
-            Console.WriteLine($" Hello { config["DBConnectionString"] } !");
+            Configuration.Bind("Storage", Storage);
 
             using (var db = new MorningerBotContext())
             {

@@ -1,12 +1,12 @@
 namespace Morninger.Models
 {
     using System.ComponentModel.DataAnnotations;
-    internal class Setting
+    public class Setting
     {
         [Key]
-        internal int Id { get; set; }
-        internal string Name { get; set; }
-        internal string Value { get; set; }
-        internal string Description { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public string Description { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 namespace Morninger.Enums
 {
-    internal enum UserDailyStatus
+    public enum UserDailyStatus
     {
         Unknown,
         Done,

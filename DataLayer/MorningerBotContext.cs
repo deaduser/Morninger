@@ -10,6 +10,7 @@ namespace Morninger.DataLayer
         internal DbSet<Setting> Settings { get; set; }
         internal DbSet<UserCalendar> UserCalendars { get; set; }
         internal DbSet<UserDay> UserDays { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=morningerbot.db");
+        protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+            options.UseSqlite($"Data Source={Program.Storage.Path}");
     }
 }
