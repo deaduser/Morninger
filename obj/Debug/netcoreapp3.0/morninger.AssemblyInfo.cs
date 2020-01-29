@@ -7,10 +7,10 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("Morninger")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("morninger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("Morninger")]
-[assembly: System.Reflection.AssemblyTitleAttribute("Morninger")]
+[assembly: System.Reflection.AssemblyProductAttribute("morninger")]
+[assembly: System.Reflection.AssemblyTitleAttribute("morninger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
