@@ -8,21 +8,21 @@ namespace Morninger.Services
 {
     internal class Worker
     {
-        private string directoryPath;
+        private string rootDirectoryPath;
 
         internal Worker(string directoryPath)
         {
-            this.directoryPath = directoryPath;
+            this.rootDirectoryPath = directoryPath;
         }
 
         internal string FilePath
         {
-            get { return $"{directoryPath}\\{DateTime.Now.Year}\\{DateTime.Now.Month}.CSV"; }
+            get { return $"{rootDirectoryPath}\\{DateTime.UtcNow.Year}\\{DateTime.UtcNow.Month}.CSV"; }
         }
 
         internal string DirectoryPath
         {
-            get { return $"{directoryPath}\\{DateTime.Now.Year}"; }
+            get { return $"{rootDirectoryPath}\\{DateTime.UtcNow.Year}"; }
         }
 
         internal string ProcessMessage(Telegram.Bot.Types.Message message)
@@ -52,9 +52,6 @@ namespace Morninger.Services
                 case "/done":
                     r.Done = r.Done + 1;
                     break;
-                case "/undone":
-                    r.Undone = r.Undone + 1;
-                    break;
                 case "/ill":
                     r.Ill = r.Ill + 1;
                     break;
@@ -64,9 +61,9 @@ namespace Morninger.Services
                     return "Comand is not recognized";
             }
 
-            if (r.LastUpdate != DateTime.Now.Day)
+            if (r.LastUpdate != DateTime.UtcNow.Day)
             {
-                r.LastUpdate = DateTime.Now.Day;
+                r.LastUpdate = DateTime.UtcNow.Day;
             }
             else
             {
@@ -126,9 +123,15 @@ namespace Morninger.Services
     internal class Record
     {
         public int UserId { get; set; }
-        public int Done { get; set; }
-        public int Undone { get; set; }
-        public int Ill { get; set; }
         public int LastUpdate { get; set; }
+        public int Done { get; set; }
+        public int Ill { get; set; }
+        public int Undone
+        {
+            get
+            {
+                return DateTime.UtcNow.Day - Done - Ill;
+            }
+        }
     }
 }
