@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using CsvHelper;
 
-namespace Morninger.Services
+namespace Morninger
 {
-    internal class Worker
+    internal class Service
     {
         private string rootDirectoryPath;
 
-        internal Worker(string directoryPath)
+        internal Service(string directoryPath)
         {
             this.rootDirectoryPath = directoryPath;
         }

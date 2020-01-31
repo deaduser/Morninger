@@ -4,18 +4,17 @@
     using System;
     using Telegram.Bot.Args;
     using Telegram.Bot;
-    using Services;
 
     public class Program
     {
         internal static ITelegramBotClient botClient;
-        internal static Worker worker;
+        internal static Service worker;
 
         static void Main(string[] args)
         {
             Console.WriteLine("Path to statistic:");
             var directory = args.Length >= 1 ? args[0] : Console.ReadLine();
-            worker = new Worker(directory);
+            worker = new Service(directory);
 
             Console.WriteLine("HTTP proxy address:");
             var webProxy = args.Length >= 2 ? args[1] : Console.ReadLine();
