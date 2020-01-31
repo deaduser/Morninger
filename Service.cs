@@ -38,7 +38,7 @@ namespace Morninger
             if (r == null)
             {
                 Console.WriteLine("No records found");
-                r = new Record { UserId = message.From.Id };
+                r = new UserMonth { UserId = message.From.Id };
                 records.Add(r);
                 Console.WriteLine("First record added");
             }
@@ -53,33 +53,33 @@ namespace Morninger
                     r.Done = r.Done + 1;
                     break;
                 case "/ill":
-                    r.Ill = r.Ill + 1;
+                    r.DayOff = r.DayOff + 1;
                     break;
                 case "/stat":
-                    return $"Done: {r.Done}\nUndone: {r.Undone}\nIll: {r.Ill}";
+                    return $"Done: {r.Done}\nUndone: {r.Undone}\nIll: {r.DayOff}";
                 default:
                     return "Comand is not recognized";
             }
 
-            if (r.LastUpdate != DateTime.UtcNow.Day)
+            /*if (r.LastUpdate != DateTime.UtcNow.Day)
             {
                 r.LastUpdate = DateTime.UtcNow.Day;
             }
             else
             {
                 return "You are already marked today";
-            }
+            }*/
 
             Write(records);
             return null;
         }
 
-        internal List<Record> Read()
+        internal List<UserMonth> Read()
         {
             using (var reader = new StreamReader(FilePath))
             using (var csv = new CsvReader(reader))
             {
-                var res = csv.GetRecords<Record>().ToList();
+                var res = csv.GetRecords<UserMonth>().ToList();
                 Console.WriteLine($"Read from file {res.Count} records");
                 return res;
             }
@@ -101,7 +101,7 @@ namespace Morninger
                     using (var writer = new StreamWriter(file))
                     using (var csv = new CsvWriter(writer))
                     {
-                        csv.WriteHeader<Record>();
+                        csv.WriteHeader<UserMonth>();
                         csv.NextRecord();
                         Console.WriteLine("Headers created");
                     }
@@ -109,28 +109,13 @@ namespace Morninger
             }
         }
 
-        internal void Write(List<Record> records)
+        internal void Write(List<UserMonth> records)
         {
             using (var writer = new StreamWriter(FilePath))
             using (var csv = new CsvWriter(writer))
             {
                 csv.WriteRecords(records);
                 Console.WriteLine($"{records.Count} written to the file");
-            }
-        }
-    }
-
-    internal class Record
-    {
-        public int UserId { get; set; }
-        public int LastUpdate { get; set; }
-        public int Done { get; set; }
-        public int Ill { get; set; }
-        public int Undone
-        {
-            get
-            {
-                return DateTime.UtcNow.Day - Done - Ill;
             }
         }
     }
