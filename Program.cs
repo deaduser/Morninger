@@ -7,14 +7,15 @@
 
     public class Program
     {
-        internal static ITelegramBotClient botClient;
-        internal static Service worker;
+        private static ITelegramBotClient botClient;
+        private static Service service;
+        private static DB db;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Path to statistic:");
+            Console.WriteLine("Path to db:");
             var directory = args.Length >= 1 ? args[0] : Console.ReadLine();
-            worker = new Service(directory);
+            service = new Service(directory);
 
             Console.WriteLine("HTTP proxy address:");
             var webProxy = args.Length >= 2 ? args[1] : Console.ReadLine();
@@ -36,7 +37,7 @@
         {
             if (e.Message.Text != null && e.Message.Text != string.Empty)
             {
-                var answer = worker.ProcessMessage(e.Message);
+                var answer = service.ProcessMessage(e.Message);
                 if (answer != null && answer != string.Empty)
                 {
                     botClient.SendTextMessageAsync(e.Message.Chat.Id, answer);

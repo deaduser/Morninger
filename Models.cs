@@ -38,7 +38,7 @@ namespace Morninger
         {
             get
             {
-                return DateTime.UtcNow.Day - Done - Ill;
+                return DateTime.UtcNow.Day - Done - DayOff;
             }
         }
     }
