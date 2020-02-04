@@ -1,122 +1,87 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CsvHelper;
-
 namespace Morninger
 {
+    using System;
+    using System.Linq;
+
     internal class Service
     {
-        private string rootDirectoryPath;
-
-        internal Service(string directoryPath)
+        internal string ProcessMessage(DB db, Telegram.Bot.Types.Message m)
         {
-            this.rootDirectoryPath = directoryPath;
-        }
+            Console.WriteLine($"\n{nameof(ProcessMessage)}");
+            Console.WriteLine($"{DateTime.UtcNow}\nMessage: '{m.Text}'\nFrom: {m.From.Id} {m.From.FirstName} {m.From.Username} {m.From.LastName}");
 
-        internal string FilePath
-        {
-            get { return $"{rootDirectoryPath}\\{DateTime.UtcNow.Year}\\{DateTime.UtcNow.Month}.CSV"; }
-        }
+            var user = db.SelectUser(m.From.Id);
 
-        internal string DirectoryPath
-        {
-            get { return $"{rootDirectoryPath}\\{DateTime.UtcNow.Year}"; }
-        }
-
-        internal string ProcessMessage(Telegram.Bot.Types.Message message)
-        {
-            Console.WriteLine($"\nMessage '{message.Text}' received");
-
-            CreateFileIfNotExist();
-
-            var records = Read();
-
-            var r = records.FirstOrDefault(o => o.UserId == message.From.Id);
-
-            if (r == null)
+            if (user == null)
             {
-                Console.WriteLine("No records found");
-                r = new UserMonth { UserId = message.From.Id };
-                records.Add(r);
-                Console.WriteLine("First record added");
-            }
-            else
-            {
-                Console.WriteLine($"{records.Count} records found");
+                user = CreateUser(db, m.From);
             }
 
-            switch (message.Text.Replace("@morningerbot", ""))
+            switch (m.Text.Replace("@morningerbot", ""))
             {
-                case "/done":
-                    r.Done = r.Done + 1;
-                    break;
-                case "/ill":
-                    r.DayOff = r.DayOff + 1;
-                    break;
-                case "/stat":
-                    return $"Done: {r.Done}\nUndone: {r.Undone}\nIll: {r.DayOff}";
-                default:
-                    return "Comand is not recognized";
-            }
-
-            /*if (r.LastUpdate != DateTime.UtcNow.Day)
-            {
-                r.LastUpdate = DateTime.UtcNow.Day;
-            }
-            else
-            {
-                return "You are already marked today";
-            }*/
-
-            Write(records);
-            return null;
-        }
-
-        internal List<UserMonth> Read()
-        {
-            using (var reader = new StreamReader(FilePath))
-            using (var csv = new CsvReader(reader))
-            {
-                var res = csv.GetRecords<UserMonth>().ToList();
-                Console.WriteLine($"Read from file {res.Count} records");
-                return res;
+                case "/done": return ProcessDoneMessage(db, user);
+                case "/dayoff": return ProcessDayOffMessage(db, user);
+                case "/stat": return ProcessStatMessage(db, user);
+                default: return ProcessDefaultMessage(db, user);
             }
         }
 
-        internal void CreateFileIfNotExist()
+        private User CreateUser(DB db, Telegram.Bot.Types.User user)
         {
-            if (!Directory.Exists(DirectoryPath))
-            {
-                Directory.CreateDirectory(DirectoryPath);
-                Console.WriteLine("Directory created");
-            }
+            Console.WriteLine($"{nameof(CreateUser)}");
 
-            if (!File.Exists(FilePath))
+            var newUser = new User
             {
-                using (var file = File.Create(FilePath))
-                {
-                    Console.WriteLine("File created");
-                    using (var writer = new StreamWriter(file))
-                    using (var csv = new CsvWriter(writer))
-                    {
-                        csv.WriteHeader<UserMonth>();
-                        csv.NextRecord();
-                        Console.WriteLine("Headers created");
-                    }
-                }
-            }
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Username = user.Username,
+                LastUpdate = DateTime.UtcNow,
+
+            };
+
+            newUser.Statistic.Add(new Month
+            {
+                UserId = newUser.Id,
+                Year = DateTime.UtcNow.Year,
+                Number = DateTime.UtcNow.Month
+            });
+
+            db.InsertUser(newUser);
+            db.InsertMonth(newUser.Statistic.First());
+
+            Console.WriteLine("User added to DB");
+            return newUser;
         }
 
-        internal void Write(List<UserMonth> records)
+        private string ProcessDefaultMessage(DB db, User user)
         {
-            using (var writer = new StreamWriter(FilePath))
-            using (var csv = new CsvWriter(writer))
+            Console.WriteLine($"{nameof(ProcessDefaultMessage)}");
+            return string.Empty;
+        }
+
+        private string ProcessStatMessage(DB db, User user)
+        {
+            Console.WriteLine($"{nameof(ProcessStatMessage)}");
+            return string.Empty;
+        }
+
+        private string ProcessDayOffMessage(DB db, User user)
+        {
+            Console.WriteLine($"{nameof(ProcessDayOffMessage)}");
+            return string.Empty;
+        }
+
+        private string ProcessDoneMessage(DB db, User user)
+        {
+            Console.WriteLine($"{nameof(ProcessDoneMessage)}");
+
+            if (user.LastUpdate == DateTime.UtcNow.Date)
             {
-                csv.WriteRecords(records);
-                Console.WriteLine($"{records.Count} written to the file");
+                return "You already marked today. I wish you a good day!";
             }
+            
+            return string.Empty;
         }
     }
 }

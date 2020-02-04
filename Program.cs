@@ -14,16 +14,17 @@
         static void Main(string[] args)
         {
             Console.WriteLine("Path to db:");
-            var directory = args.Length >= 1 ? args[0] : Console.ReadLine();
-            service = new Service(directory);
+            var pathToDb = args.Length >= 1 ? args[0] : Console.ReadLine();
+            db = new DB(pathToDb);
+            service = new Service();
 
             Console.WriteLine("HTTP proxy address:");
             var webProxy = args.Length >= 2 ? args[1] : Console.ReadLine();
-            var httpProxy = new WebProxy(webProxy);
+            var httpProxy = webProxy == string.Empty ? null : new WebProxy(webProxy);
 
             Console.WriteLine("Bot ID:");
             var botId = args.Length >= 3 ? args[2] : Console.ReadLine();
-            botClient = new TelegramBotClient(botId, httpProxy);
+            botClient = webProxy == string.Empty ? new TelegramBotClient(botId) : new TelegramBotClient(botId, httpProxy);
 
             botClient.SetWebhookAsync("");
             botClient.OnMessage += onMessage;
@@ -37,7 +38,7 @@
         {
             if (e.Message.Text != null && e.Message.Text != string.Empty)
             {
-                var answer = service.ProcessMessage(e.Message);
+                var answer = service.ProcessMessage(db, e.Message);
                 if (answer != null && answer != string.Empty)
                 {
                     botClient.SendTextMessageAsync(e.Message.Chat.Id, answer);

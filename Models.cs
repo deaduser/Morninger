@@ -2,38 +2,40 @@ namespace Morninger
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("User")]
     internal class User
     {
-        [Column("Id")]
-        public int Id { get; set; }
-        [Column("FirstName")]
-        public string FirstName { get; set; }
-        [Column("LastName")]
-        public string LastName { get; set; }
-        [Column("Username")]
-        public string Username { get; set; }
-        [Column("LastUpdate")]
-        public DateTime LastUpdate { get; set; }
-        public List<UserMonth> Statistic { get; set; }
+        internal User()
+        {
+            Statistic = new List<Month>();
+        }
 
+        public long Id { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Username { get; set; }
+
+        public DateTime LastUpdate { get; set; }
+
+        public List<Month> Statistic { get; set; }
     }
 
-    [Table("UserMonth")]
-    internal class UserMonth
+    internal class Month
     {
-        [Column("Id")]
-        public int UserId { get; set; }
-        [Column("Year")]
+
+        public long UserId { get; set; }
+
         public int Year { get; set; }
-        [Column("Month")]
-        public int Month { get; set; }
-        [Column("Done")]
-        public int Done { get; set; }
-        [Column("DayOff")]
-        public int DayOff { get; set; }
+
+        public int Number { get; set; }
+
+        public int Done { get; set; } = 0;
+
+        public int DayOff { get; set; } = 0;
+
         public int Undone
         {
             get
