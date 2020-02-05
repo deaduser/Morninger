@@ -38,8 +38,19 @@
         {
             if (e.Message.Text != null && e.Message.Text != string.Empty)
             {
-                var answer = service.ProcessMessage(db, e.Message);
-                if (answer != null && answer != string.Empty)
+                string answer = string.Empty;
+
+                try
+                {
+                    answer = service.ProcessMessage(db, e.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    botClient.SendTextMessageAsync(e.Message.Chat.Id, ex.Message);
+                }
+
+                if (answer != string.Empty)
                 {
                     botClient.SendTextMessageAsync(e.Message.Chat.Id, answer);
                 }

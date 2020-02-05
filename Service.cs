@@ -16,6 +16,14 @@ namespace Morninger
             {
                 user = CreateUser(db, m.From);
             }
+            else
+            {
+                user.FirstName = m.From.FirstName;
+                user.LastName = m.From.LastName;
+                user.Username = m.From.Username;
+                user.LastUpdate = DateTime.UtcNow;
+                db.UpdateUser(user);
+            }
 
             switch (m.Text.Replace("@morningerbot", ""))
             {
@@ -40,12 +48,7 @@ namespace Morninger
 
             };
 
-            newUser.Statistic.Add(new Month
-            {
-                UserId = newUser.Id,
-                Year = DateTime.UtcNow.Year,
-                Number = DateTime.UtcNow.Month
-            });
+            newUser.Statistic.Add(new Month(newUser.Id));
 
             db.InsertUser(newUser);
             db.InsertMonth(newUser.Statistic.First());
@@ -63,25 +66,51 @@ namespace Morninger
         private string ProcessStatMessage(DB db, User user)
         {
             Console.WriteLine($"{nameof(ProcessStatMessage)}");
-            return string.Empty;
+            var m = SelectOrCreateCurrentMonth(db, user);
+            return $"Done: {m.Done}\nUndone: {m.Undone}\nDayOff: {m.DayOff}";
         }
 
         private string ProcessDayOffMessage(DB db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDayOffMessage)}");
+            var m = SelectOrCreateCurrentMonth(db, user);
+
+            if (user.LastUpdate.Date == DateTime.UtcNow.Date)
+            {
+                return "You already marked today. I wish you a good day!";
+            }
+
+            m.DayOff = m.DayOff + 1;
+            m.LastUpdate = DateTime.UtcNow;
+            db.UpdateMonth(m);
             return string.Empty;
         }
 
         private string ProcessDoneMessage(DB db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDoneMessage)}");
+            var m = SelectOrCreateCurrentMonth(db, user);
 
-            if (user.LastUpdate == DateTime.UtcNow.Date)
+            if (user.LastUpdate.Date == DateTime.UtcNow.Date)
             {
                 return "You already marked today. I wish you a good day!";
             }
-            
+
+            m.Done = m.Done + 1;
+            m.LastUpdate = DateTime.UtcNow;
+            db.UpdateMonth(m);
             return string.Empty;
+        }
+
+        private Month SelectOrCreateCurrentMonth(DB db, User user)
+        {
+            var m = user.Statistic.Where(s => s.Year == DateTime.UtcNow.Year && s.Number == DateTime.UtcNow.Month).FirstOrDefault();
+            if (m == null)
+            {
+                m = new Month(user.Id);
+                db.InsertMonth(m);
+            }
+            return m;
         }
     }
 }

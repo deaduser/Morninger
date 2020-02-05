@@ -25,16 +25,22 @@ namespace Morninger
 
     internal class Month
     {
+        internal Month(long userId)
+        {
+            UserId = userId;
+        }
 
         public long UserId { get; set; }
 
-        public int Year { get; set; }
+        public int Year { get; set; } = DateTime.UtcNow.Year;
 
-        public int Number { get; set; }
+        public int Number { get; set; } = DateTime.UtcNow.Month;
 
         public int Done { get; set; } = 0;
 
         public int DayOff { get; set; } = 0;
+
+        public DateTime LastUpdate { get; set; } = DateTime.MinValue;
 
         public int Undone
         {

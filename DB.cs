@@ -17,30 +17,7 @@ namespace Morninger
             throw new NotImplementedException();
         }
 
-        internal List<Month> SelectMonths(long userId)
-        {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = new SQLiteCommand("select * from months where id = @id ", con);
-            con.Open();
-
-            cmd.Parameters.Add(new SQLiteParameter("@id", userId));
-            var result = cmd.ExecuteReader();
-
-            var months = new List<Month>();
-            while (result.Read())
-            {
-                months.Add(new Month
-                {
-                    UserId = (long)result["UserId"],
-                    Year = (int)result["Year"],
-                    Number = (int)result["Month"],
-                    Done = (int)result["Done"],
-                    DayOff = (int)result["DayOff"]
-                });
-            }
-
-            return months;
-        }
+        #region user
 
         internal User SelectUser(long userId)
         {
@@ -68,7 +45,7 @@ namespace Morninger
             using var cmd = con.CreateCommand();
             con.Open();
 
-            cmd.CommandText = @"INSERT INTO User (Id, FirstName, LastName, Username, LastUpdate) 
+            cmd.CommandText = @"INSERT INTO users (Id, FirstName, LastName, Username, LastUpdate) 
                                 VALUES (@UserId, @FirstName, @LastName, @Username, @LastUpdate)";
 
             cmd.Parameters.Add(new SQLiteParameter("@Id", user.Id));
@@ -87,7 +64,7 @@ namespace Morninger
             using var cmd = con.CreateCommand();
             con.Open();
 
-            cmd.CommandText = @"update user set FirstName = @FirstName, LastName = @LastName, Username = @Username, LastUpdate = @LastUpdate where id = @id";
+            cmd.CommandText = @"update users set FirstName = @FirstName, LastName = @LastName, Username = @Username, LastUpdate = @LastUpdate where id = @id";
 
             cmd.Parameters.Add(new SQLiteParameter("@id", user.Id));
             cmd.Parameters.Add(new SQLiteParameter("@FirstName", user.FirstName));
@@ -99,20 +76,50 @@ namespace Morninger
             con.Close();
         }
 
+        #endregion user
+
+        #region month
+
+        internal List<Month> SelectMonths(long userId)
+        {
+            using var con = new SQLiteConnection($"Data Source={pathToDb}");
+            using var cmd = new SQLiteCommand("select * from months where id = @id ", con);
+            con.Open();
+
+            cmd.Parameters.Add(new SQLiteParameter("@id", userId));
+            var result = cmd.ExecuteReader();
+
+            var months = new List<Month>();
+            while (result.Read())
+            {
+                months.Add(new Month((long)result["UserId"])
+                {
+                    Year = (int)result["Year"],
+                    Number = (int)result["Month"],
+                    Done = (int)result["Done"],
+                    DayOff = (int)result["DayOff"],
+                    LastUpdate = DateTime.Parse((string)result["LastUpdate"])
+                });
+            }
+
+            return months;
+        }
+
         internal void InsertMonth(Month month)
         {
             using var con = new SQLiteConnection($"Data Source={pathToDb}");
             using var cmd = con.CreateCommand();
             con.Open();
 
-            cmd.CommandText = @"INSERT INTO UserMonth (UserId, Year, LastName, Username, LastUpdate) 
-                                VALUES (@UserId, @FirstName, @LastName, @Username, @LastUpdate)";
+            cmd.CommandText = @"INSERT INTO months (UserId, Year, Month, Done, DayOff, LastUpdate) 
+                                            VALUES (@UserId, @Year, @Month, @Done, @DayOff, @LastUpdate)";
 
             cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
             cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
             cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
             cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
             cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
+            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
 
             cmd.ExecuteNonQuery();
             con.Close();
@@ -124,16 +131,19 @@ namespace Morninger
             using var cmd = con.CreateCommand();
             con.Open();
 
-            cmd.CommandText = @"update user set Done = @Done, DayOff = @DayOff where UserId = @UserId and Year = @Year and Month = @Month";
+            cmd.CommandText = @"update months set Done = @Done, DayOff = @DayOff, LastUpdate = @LastUpdate where UserId = @UserId and Year = @Year and Month = @Month";
 
             cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
             cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
             cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
             cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
             cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
+            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
 
             cmd.ExecuteNonQuery();
             con.Close();
         }
+
+        #endregion month
     }
 }
