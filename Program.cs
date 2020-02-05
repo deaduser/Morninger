@@ -46,7 +46,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.ToString());
                     botClient.SendTextMessageAsync(e.Message.Chat.Id, ex.Message);
                 }
 

@@ -21,59 +21,78 @@ namespace Morninger
 
         internal User SelectUser(long userId)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = new SQLiteCommand("select * from users where id = @id ", con);
-            con.Open();
+            Console.WriteLine($"{nameof(SelectUser)}");
 
-            cmd.Parameters.Add(new SQLiteParameter("@id", userId));
-            var row = cmd.ExecuteReader();
-            row.Read();
-
-            return row.HasRows ? new User
+            User user = null;
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
             {
-                Id = (long)row["Id"],
-                FirstName = (string)row["FirstName"],
-                LastName = (string)row["LastName"],
-                Username = (string)row["Username"],
-                LastUpdate = DateTime.Parse(((string)row["LastUpdate"]))
-            } : null;
+                con.Open();
+                using (var cmd = new SQLiteCommand("select * from users where id = @id ", con))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@id", userId));
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.HasRows)
+                        {
+                            return null;
+                        }
+
+                        reader.Read();
+                        user = new User
+                        {
+                            Id = (long)reader["Id"],
+                            FirstName = (string)reader["FirstName"],
+                            LastName = (string)reader["LastName"],
+                            Username = (string)reader["Username"],
+                            LastUpdate = DateTime.Parse(((string)reader["LastUpdate"]))
+                        };
+                    }
+                }
+                con.Close();
+            }
+
+            user.Statistic = SelectMonths(user.Id);
+            return user;
         }
 
         internal void InsertUser(User user)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = con.CreateCommand();
-            con.Open();
+            Console.WriteLine($"{nameof(InsertUser)}");
 
-            cmd.CommandText = @"INSERT INTO users (Id, FirstName, LastName, Username, LastUpdate) 
-                                VALUES (@UserId, @FirstName, @LastName, @Username, @LastUpdate)";
-
-            cmd.Parameters.Add(new SQLiteParameter("@Id", user.Id));
-            cmd.Parameters.Add(new SQLiteParameter("@FirstName", user.FirstName));
-            cmd.Parameters.Add(new SQLiteParameter("@LastName", user.LastName));
-            cmd.Parameters.Add(new SQLiteParameter("@Username", user.Username));
-            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", DateTime.UtcNow.ToShortDateString()));
-
-            cmd.ExecuteNonQuery();
-            con.Close();
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
+            {
+                con.Open();
+                using (var cmd = new SQLiteCommand("INSERT INTO users (Id, FirstName, LastName, Username, LastUpdate) VALUES (@Id, @FirstName, @LastName, @Username, @LastUpdate)", con))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@Id", user.Id));
+                    cmd.Parameters.Add(new SQLiteParameter("@FirstName", user.FirstName));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastName", user.LastName));
+                    cmd.Parameters.Add(new SQLiteParameter("@Username", user.Username));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", DateTime.UtcNow.ToShortDateString()));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+            }
         }
 
         internal void UpdateUser(User user)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = con.CreateCommand();
-            con.Open();
+            Console.WriteLine($"{nameof(UpdateUser)}");
 
-            cmd.CommandText = @"update users set FirstName = @FirstName, LastName = @LastName, Username = @Username, LastUpdate = @LastUpdate where id = @id";
-
-            cmd.Parameters.Add(new SQLiteParameter("@id", user.Id));
-            cmd.Parameters.Add(new SQLiteParameter("@FirstName", user.FirstName));
-            cmd.Parameters.Add(new SQLiteParameter("@LastName", user.LastName));
-            cmd.Parameters.Add(new SQLiteParameter("@Username", user.Username));
-            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", DateTime.UtcNow.ToShortDateString()));
-
-            cmd.ExecuteNonQuery();
-            con.Close();
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
+            {
+                con.Open();
+                using (var cmd = new SQLiteCommand("update users set FirstName = @FirstName, LastName = @LastName, Username = @Username, LastUpdate = @LastUpdate where id = @id", con))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@id", user.Id));
+                    cmd.Parameters.Add(new SQLiteParameter("@FirstName", user.FirstName));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastName", user.LastName));
+                    cmd.Parameters.Add(new SQLiteParameter("@Username", user.Username));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", DateTime.UtcNow.ToShortDateString()));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+            }
         }
 
         #endregion user
@@ -82,24 +101,36 @@ namespace Morninger
 
         internal List<Month> SelectMonths(long userId)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = new SQLiteCommand("select * from months where id = @id ", con);
-            con.Open();
-
-            cmd.Parameters.Add(new SQLiteParameter("@id", userId));
-            var result = cmd.ExecuteReader();
+            Console.WriteLine($"{nameof(SelectMonths)}");
 
             var months = new List<Month>();
-            while (result.Read())
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
             {
-                months.Add(new Month((long)result["UserId"])
+                con.Open();
+                using (var cmd = new SQLiteCommand("select * from months where userid = @userid", con))
                 {
-                    Year = (int)result["Year"],
-                    Number = (int)result["Month"],
-                    Done = (int)result["Done"],
-                    DayOff = (int)result["DayOff"],
-                    LastUpdate = DateTime.Parse((string)result["LastUpdate"])
-                });
+                    cmd.Parameters.Add(new SQLiteParameter("@userid", userId));
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.HasRows)
+                        {
+                            return null;
+                        }
+
+                        while (reader.Read())
+                        {
+                            var month = new Month(userId);
+                            month.Year = (int)(long)reader["Year"];
+                            month.Number = (int)(long)reader["Month"];
+                            month.Done = (int)(long)reader["Done"];
+                            month.DayOff = (int)(long)reader["DayOff"];
+                            month.LastUpdate = DateTime.Parse((string)reader["LastUpdate"]);
+                            months.Add(month);
+                        }
+                    }
+                }
+
+                con.Close();
             }
 
             return months;
@@ -107,41 +138,45 @@ namespace Morninger
 
         internal void InsertMonth(Month month)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = con.CreateCommand();
-            con.Open();
+            Console.WriteLine($"{nameof(InsertMonth)}");
 
-            cmd.CommandText = @"INSERT INTO months (UserId, Year, Month, Done, DayOff, LastUpdate) 
-                                            VALUES (@UserId, @Year, @Month, @Done, @DayOff, @LastUpdate)";
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
+            {
+                con.Open();
+                using (var cmd = new SQLiteCommand("INSERT INTO months (UserId, Year, Month, Done, DayOff, LastUpdate) VALUES (@UserId, @Year, @Month, @Done, @DayOff, @LastUpdate)", con))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
+                    cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
+                    cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
+                    cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
+                    cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate.ToShortDateString()));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
 
-            cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
-            cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
-            cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
-            cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
-            cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
-            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
-
-            cmd.ExecuteNonQuery();
-            con.Close();
+            }
         }
 
         internal void UpdateMonth(Month month)
         {
-            using var con = new SQLiteConnection($"Data Source={pathToDb}");
-            using var cmd = con.CreateCommand();
-            con.Open();
+            Console.WriteLine($"{nameof(UpdateMonth)}");
 
-            cmd.CommandText = @"update months set Done = @Done, DayOff = @DayOff, LastUpdate = @LastUpdate where UserId = @UserId and Year = @Year and Month = @Month";
-
-            cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
-            cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
-            cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
-            cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
-            cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
-            cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
-
-            cmd.ExecuteNonQuery();
-            con.Close();
+            using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
+            {
+                con.Open();
+                using (var cmd = new SQLiteCommand("update months set Done = @Done, DayOff = @DayOff, LastUpdate = @LastUpdate where UserId = @UserId and Year = @Year and Month = @Month", con))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@UserId", month.UserId));
+                    cmd.Parameters.Add(new SQLiteParameter("@Year", month.Year));
+                    cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
+                    cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
+                    cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+            }
         }
 
         #endregion month

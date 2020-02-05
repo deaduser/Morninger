@@ -75,7 +75,7 @@ namespace Morninger
             Console.WriteLine($"{nameof(ProcessDayOffMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
 
-            if (user.LastUpdate.Date == DateTime.UtcNow.Date)
+            if (m.LastUpdate.Date == DateTime.UtcNow.Date)
             {
                 return "You already marked today. I wish you a good day!";
             }
@@ -91,7 +91,7 @@ namespace Morninger
             Console.WriteLine($"{nameof(ProcessDoneMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
 
-            if (user.LastUpdate.Date == DateTime.UtcNow.Date)
+            if (m.LastUpdate.Date == DateTime.UtcNow.Date)
             {
                 return "You already marked today. I wish you a good day!";
             }

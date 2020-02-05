@@ -40,7 +40,7 @@ namespace Morninger
 
         public int DayOff { get; set; } = 0;
 
-        public DateTime LastUpdate { get; set; } = DateTime.MinValue;
+        public DateTime LastUpdate { get; set; } = DateTime.UtcNow;
 
         public int Undone
         {
