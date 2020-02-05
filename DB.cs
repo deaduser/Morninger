@@ -172,7 +172,7 @@ namespace Morninger
                     cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
                     cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
                     cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
-                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate.ToShortDateString()));
                     cmd.ExecuteNonQuery();
                 }
                 con.Close();

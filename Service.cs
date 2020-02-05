@@ -45,10 +45,9 @@ namespace Morninger
                 LastName = user.LastName,
                 Username = user.Username,
                 LastUpdate = DateTime.UtcNow,
-
             };
 
-            newUser.Statistic.Add(new Month(newUser.Id));
+            newUser.Statistic.Add(new Month(newUser.Id) { LastUpdate = DateTime.MinValue });
 
             db.InsertUser(newUser);
             db.InsertMonth(newUser.Statistic.First());
@@ -104,10 +103,13 @@ namespace Morninger
 
         private Month SelectOrCreateCurrentMonth(DB db, User user)
         {
+            Console.WriteLine($"{nameof(SelectOrCreateCurrentMonth)}");
+
             var m = user.Statistic.Where(s => s.Year == DateTime.UtcNow.Year && s.Number == DateTime.UtcNow.Month).FirstOrDefault();
             if (m == null)
             {
                 m = new Month(user.Id);
+                m.LastUpdate = DateTime.MinValue;
                 db.InsertMonth(m);
             }
             return m;
