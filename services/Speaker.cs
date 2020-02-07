@@ -3,9 +3,9 @@ namespace Morninger
     using System;
     using System.Linq;
 
-    internal class Service
+    internal class Speaker
     {
-        internal string ProcessMessage(DB db, Telegram.Bot.Types.Message m)
+        internal string ProcessMessage(SQLiteProvider db, Telegram.Bot.Types.Message m)
         {
             Console.WriteLine($"\n{nameof(ProcessMessage)}");
             Console.WriteLine($"{DateTime.UtcNow}\nMessage: '{m.Text}'\nFrom: {m.From.Id} {m.From.FirstName} {m.From.Username} {m.From.LastName}");
@@ -34,7 +34,7 @@ namespace Morninger
             }
         }
 
-        private User CreateUser(DB db, Telegram.Bot.Types.User user)
+        private User CreateUser(SQLiteProvider db, Telegram.Bot.Types.User user)
         {
             Console.WriteLine($"{nameof(CreateUser)}");
 
@@ -45,10 +45,9 @@ namespace Morninger
                 LastName = user.LastName,
                 Username = user.Username,
                 LastUpdate = DateTime.UtcNow,
-
             };
 
-            newUser.Statistic.Add(new Month(newUser.Id));
+            newUser.Statistic.Add(new Month(newUser.Id) { LastUpdate = DateTime.MinValue });
 
             db.InsertUser(newUser);
             db.InsertMonth(newUser.Statistic.First());
@@ -57,20 +56,20 @@ namespace Morninger
             return newUser;
         }
 
-        private string ProcessDefaultMessage(DB db, User user)
+        private string ProcessDefaultMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDefaultMessage)}");
             return string.Empty;
         }
 
-        private string ProcessStatMessage(DB db, User user)
+        private string ProcessStatMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessStatMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
             return $"Done: {m.Done}\nUndone: {m.Undone}\nDayOff: {m.DayOff}";
         }
 
-        private string ProcessDayOffMessage(DB db, User user)
+        private string ProcessDayOffMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDayOffMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
@@ -86,7 +85,7 @@ namespace Morninger
             return string.Empty;
         }
 
-        private string ProcessDoneMessage(DB db, User user)
+        private string ProcessDoneMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDoneMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
@@ -102,12 +101,15 @@ namespace Morninger
             return string.Empty;
         }
 
-        private Month SelectOrCreateCurrentMonth(DB db, User user)
+        private Month SelectOrCreateCurrentMonth(SQLiteProvider db, User user)
         {
+            Console.WriteLine($"{nameof(SelectOrCreateCurrentMonth)}");
+
             var m = user.Statistic.Where(s => s.Year == DateTime.UtcNow.Year && s.Number == DateTime.UtcNow.Month).FirstOrDefault();
             if (m == null)
             {
                 m = new Month(user.Id);
+                m.LastUpdate = DateTime.MinValue;
                 db.InsertMonth(m);
             }
             return m;

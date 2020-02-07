@@ -8,23 +8,21 @@
     public class Program
     {
         private static ITelegramBotClient botClient;
-        private static Service service;
-        private static DB db;
+        private static Speaker speaker;
+        private static SQLiteProvider db;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Path to db:");
-            var pathToDb = args.Length >= 1 ? args[0] : Console.ReadLine();
-            db = new DB(pathToDb);
-            service = new Service();
+            db = new SQLiteProvider(args[0]);
+            speaker = new Speaker();
 
-            Console.WriteLine("HTTP proxy address:");
-            var webProxy = args.Length >= 2 ? args[1] : Console.ReadLine();
-            var httpProxy = webProxy == string.Empty ? null : new WebProxy(webProxy);
+            var httpProxy = args[1] != string.Empty
+                ? new WebProxy(args[1])
+                : null;
 
-            Console.WriteLine("Bot ID:");
-            var botId = args.Length >= 3 ? args[2] : Console.ReadLine();
-            botClient = webProxy == string.Empty ? new TelegramBotClient(botId) : new TelegramBotClient(botId, httpProxy);
+            botClient = httpProxy == null
+                ? new TelegramBotClient(args[2])
+                : new TelegramBotClient(args[2], httpProxy);
 
             botClient.SetWebhookAsync("");
             botClient.OnMessage += onMessage;
@@ -42,7 +40,7 @@
 
                 try
                 {
-                    answer = service.ProcessMessage(db, e.Message);
+                    answer = speaker.ProcessMessage(db, e.Message);
                 }
                 catch (Exception ex)
                 {

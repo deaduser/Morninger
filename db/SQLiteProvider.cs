@@ -4,10 +4,10 @@ namespace Morninger
     using System.Data.SQLite;
     using System;
 
-    internal class DB
+    internal class SQLiteProvider
     {
         private string pathToDb;
-        internal DB(string pathToDb)
+        internal SQLiteProvider(string pathToDb)
         {
             this.pathToDb = pathToDb;
         }
@@ -27,6 +27,8 @@ namespace Morninger
             using (var con = new SQLiteConnection($"Data Source={pathToDb}"))
             {
                 con.Open();
+
+
                 using (var cmd = new SQLiteCommand("select * from users where id = @id ", con))
                 {
                     cmd.Parameters.Add(new SQLiteParameter("@id", userId));
@@ -172,7 +174,7 @@ namespace Morninger
                     cmd.Parameters.Add(new SQLiteParameter("@Month", month.Number));
                     cmd.Parameters.Add(new SQLiteParameter("@Done", month.Done));
                     cmd.Parameters.Add(new SQLiteParameter("@DayOff", month.DayOff));
-                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate));
+                    cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate.ToShortDateString()));
                     cmd.ExecuteNonQuery();
                 }
                 con.Close();
