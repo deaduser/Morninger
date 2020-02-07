@@ -41,9 +41,9 @@ namespace Morninger
                         user = new User
                         {
                             Id = (long)reader["Id"],
-                            FirstName = (string)reader["FirstName"],
-                            LastName = (string)reader["LastName"],
-                            Username = (string)reader["Username"],
+                            FirstName = reader["FirstName"] == DBNull.Value ? string.Empty : reader["FirstName"].ToString(),
+                            LastName = reader["LastName"] == DBNull.Value ? string.Empty : reader["LastName"].ToString(),
+                            Username = reader["Username"] == DBNull.Value ? string.Empty : reader["Username"].ToString(),
                             LastUpdate = DateTime.Parse(((string)reader["LastUpdate"]))
                         };
                     }
