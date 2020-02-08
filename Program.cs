@@ -8,13 +8,13 @@
     public class Program
     {
         private static ITelegramBotClient botClient;
-        private static Service service;
-        private static DB db;
+        private static SpeakerService speaker;
+        private static SqLiteAdapter db;
 
         static void Main(string[] args)
         {
-            db = new DB(args[0]);
-            service = new Service();
+            db = new SqLiteAdapter(args[0]);
+            speaker = new SpeakerService();
 
             var httpProxy = args[1] != string.Empty
                 ? new WebProxy(args[1])
@@ -40,7 +40,7 @@
 
                 try
                 {
-                    answer = service.ProcessMessage(db, e.Message);
+                    answer = speaker.ProcessMessage(db, e.Message);
                 }
                 catch (Exception ex)
                 {
