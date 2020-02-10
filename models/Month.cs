@@ -1,6 +1,6 @@
 namespace Morninger
 {
-    using System;    
+    using System;
 
     internal class Month
     {
