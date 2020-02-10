@@ -154,8 +154,8 @@ namespace Morninger
                     cmd.Parameters.Add(new SQLiteParameter("@LastUpdate", month.LastUpdate.ToShortDateString()));
                     cmd.ExecuteNonQuery();
                 }
-                con.Close();
 
+                con.Close();
             }
         }
 
