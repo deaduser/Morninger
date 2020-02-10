@@ -9,11 +9,11 @@
     {
         private static ITelegramBotClient botClient;
         private static SpeakerService speaker;
-        private static SqLiteAdapter db;
+        private static SQLiteProvider db;
 
         static void Main(string[] args)
         {
-            db = new SqLiteAdapter(args[0]);
+            db = new SQLiteProvider(args[0]);
             speaker = new SpeakerService();
 
             var httpProxy = args[1] != string.Empty

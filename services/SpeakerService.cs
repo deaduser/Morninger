@@ -5,7 +5,7 @@ namespace Morninger
 
     internal class SpeakerService
     {
-        internal string ProcessMessage(SqLiteAdapter db, Telegram.Bot.Types.Message m)
+        internal string ProcessMessage(SQLiteProvider db, Telegram.Bot.Types.Message m)
         {
             Console.WriteLine($"\n{nameof(ProcessMessage)}");
             Console.WriteLine($"{DateTime.UtcNow}\nMessage: '{m.Text}'\nFrom: {m.From.Id} {m.From.FirstName} {m.From.Username} {m.From.LastName}");
@@ -22,7 +22,7 @@ namespace Morninger
             }
         }
 
-        private User CreateUser(SqLiteAdapter db, Telegram.Bot.Types.User user)
+        private User CreateUser(SQLiteProvider db, Telegram.Bot.Types.User user)
         {
             Console.WriteLine($"{nameof(CreateUser)}");
 
@@ -44,20 +44,20 @@ namespace Morninger
             return newUser;
         }
 
-        private string ProcessDefaultMessage(SqLiteAdapter db, User user)
+        private string ProcessDefaultMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDefaultMessage)}");
             return string.Empty;
         }
 
-        private string ProcessStatMessage(SqLiteAdapter db, User user)
+        private string ProcessStatMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessStatMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
             return $"Done: {m.Done}\nUndone: {m.Undone}\nDayOff: {m.DayOff}";
         }
 
-        private string ProcessDayOffMessage(SqLiteAdapter db, User user)
+        private string ProcessDayOffMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDayOffMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
@@ -73,7 +73,7 @@ namespace Morninger
             return string.Empty;
         }
 
-        private string ProcessDoneMessage(SqLiteAdapter db, User user)
+        private string ProcessDoneMessage(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(ProcessDoneMessage)}");
             var m = SelectOrCreateCurrentMonth(db, user);
@@ -89,7 +89,7 @@ namespace Morninger
             return string.Empty;
         }
 
-        private Month SelectOrCreateCurrentMonth(SqLiteAdapter db, User user)
+        private Month SelectOrCreateCurrentMonth(SQLiteProvider db, User user)
         {
             Console.WriteLine($"{nameof(SelectOrCreateCurrentMonth)}");
 
@@ -103,7 +103,7 @@ namespace Morninger
             return m;
         }
 
-        private User SelectOrCreateUser(SqLiteAdapter db, Telegram.Bot.Types.User tUser)
+        private User SelectOrCreateUser(SQLiteProvider db, Telegram.Bot.Types.User tUser)
         {
             Console.WriteLine($"{nameof(SelectOrCreateUser)}");
 

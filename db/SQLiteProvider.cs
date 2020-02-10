@@ -4,11 +4,11 @@ namespace Morninger
     using System.Data.SQLite;
     using System;
 
-    internal class SqLiteAdapter
+    internal class SQLiteProvider
     {
         private string connectionString;
 
-        internal SqLiteAdapter(string pathToDb)
+        internal SQLiteProvider(string pathToDb)
         {
             this.connectionString = $"Data Source={pathToDb}";
         }
