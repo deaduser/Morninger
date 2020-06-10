@@ -1,16 +1,16 @@
-namespace Morninger
+namespace Edomozh
 {
     using System.Collections.Generic;
     using System.Data.SQLite;
     using System;
 
-    internal class SQLiteProvider
+    internal class SQLiteProvider 
     {
-        private string connectionString;
+        private readonly string connectionString;
 
         internal SQLiteProvider(string pathToDb)
         {
-            this.connectionString = $"Data Source={pathToDb}";
+            connectionString = $"Data Source={pathToDb}";
         }
 
         internal void CreateDB(string directory)

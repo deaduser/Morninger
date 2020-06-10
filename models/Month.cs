@@ -1,4 +1,4 @@
-namespace Morninger
+namespace Edomozh
 {
     using System;
 
@@ -21,12 +21,7 @@ namespace Morninger
 
         public DateTime LastUpdate { get; set; } = DateTime.UtcNow;
 
-        public int Undone
-        {
-            get
-            {
-                return DateTime.UtcNow.Day - Done - DayOff;
-            }
-        }
+        public int Undone => DateTime.UtcNow.Day - Done - DayOff;
+
     }
 }

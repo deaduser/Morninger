@@ -1,4 +1,4 @@
-namespace Morninger
+namespace Edomozh
 {
     using System;
     using System.Collections.Generic;

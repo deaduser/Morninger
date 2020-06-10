@@ -1,4 +1,4 @@
-﻿namespace Morninger
+﻿namespace Edomozh
 {
     using System.Net;
     using System;
@@ -7,52 +7,67 @@
 
     public class Program
     {
-        private static ITelegramBotClient botClient;
-        private static SpeakerService speaker;
-        private static SQLiteProvider db;
+        private static ITelegramBotClient telegramBot;
+        private static DataHelper dataHelper;
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            db = new SQLiteProvider(args[0]);
-            speaker = new SpeakerService();
-
-            var httpProxy = args[1] != string.Empty
-                ? new WebProxy(args[1])
-                : null;
-
-            botClient = httpProxy == null
-                ? new TelegramBotClient(args[2])
-                : new TelegramBotClient(args[2], httpProxy);
-
-            botClient.SetWebhookAsync("");
-            botClient.OnMessage += onMessage;
-            botClient.StartReceiving();
-            Console.WriteLine("App started...");
-
-            while (Console.ReadLine() != "Exit") ;
+            dataHelper = InitMorninger(InitDataBase(args[0]));
+            telegramBot = InitTelegramBot(InitProxy(args[1]), args[2]);
+            while (Console.ReadLine() != "exit") ;
         }
 
-        static void onMessage(object sender, MessageEventArgs e)
+        static void OnMessage(object sender, MessageEventArgs e)
         {
-            if (e.Message.Text != null && e.Message.Text != string.Empty)
+            Console.WriteLine(nameof(OnMessage));
+
+            try
             {
-                string answer = string.Empty;
+                if (e.Message.Text == null && e.Message.Text == string.Empty) return;
+                var answer = dataHelper.ProcessMessage(e.Message);
 
-                try
-                {
-                    answer = speaker.ProcessMessage(db, e.Message);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    botClient.SendTextMessageAsync(e.Message.Chat.Id, ex.Message);
-                }
-
-                if (answer != string.Empty)
-                {
-                    botClient.SendTextMessageAsync(e.Message.Chat.Id, answer);
-                }
+                if (answer == string.Empty) return;
+                telegramBot.SendTextMessageAsync(e.Message.Chat.Id, answer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
+
+        #region Init
+
+        private static SQLiteProvider InitDataBase(string path)
+        {
+            Console.WriteLine(nameof(InitDataBase));
+            return new SQLiteProvider(path);
+        }
+
+        private static DataHelper InitMorninger(SQLiteProvider db)
+        {
+            Console.WriteLine(nameof(InitMorninger));
+            return new DataHelper(db);
+        }
+
+        private static IWebProxy InitProxy(string address)
+        {
+            Console.WriteLine(nameof(InitProxy));
+            return address != string.Empty ? new WebProxy(address) : null;
+        }
+
+        private static ITelegramBotClient InitTelegramBot(IWebProxy proxy, string apitoken)
+        {
+            Console.WriteLine(nameof(InitTelegramBot));
+            var bot = proxy == null
+                ? new TelegramBotClient(apitoken)
+                : new TelegramBotClient(apitoken, proxy);
+            bot.SetWebhookAsync("");
+            bot.OnMessage += OnMessage;
+            bot.StartReceiving();
+            return bot;
+
+        }
+
+        #endregion Init
     }
 }
