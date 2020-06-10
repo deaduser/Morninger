@@ -1,4 +1,4 @@
-namespace Morninger
+namespace Edomozh
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@ namespace Morninger
     {
         internal User()
         {
-            Statistic = new List<Month>();
+            Entries = new List<Entry>();
         }
 
         public long Id { get; set; }
@@ -18,8 +18,6 @@ namespace Morninger
 
         public string Username { get; set; }
 
-        public DateTime LastUpdate { get; set; }
-
-        public List<Month> Statistic { get; set; }
+        public List<Entry> Entries { get; set; }
     }
 }
