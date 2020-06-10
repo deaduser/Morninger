@@ -40,7 +40,7 @@
         private static SQLiteProvider InitDataBase(string path)
         {
             Console.WriteLine(nameof(InitDataBase));
-            return new SQLiteProvider(path);
+            return new SQLiteProvider();
         }
 
         private static DataHelper InitMorninger(SQLiteProvider db)

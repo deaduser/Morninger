@@ -117,22 +117,50 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AlreadyCheckedInMessage" xml:space="preserve">
-    <value>You've already checked in today.</value>
+  <data name="CreateTables" xml:space="preserve">
+    <value>create table if not exists "User" (
+ "Id"         integer not null primary key,
+ "FirstName"  text,
+ "LastName"   text,
+ "Username"   text
+);
+
+create table if not exists "Entry" (
+ "UserId"    integer not null,
+ 
+ "Year"      integer not null,
+ "Month"     integer not null,
+ "Day"       integer not null,
+ 
+ "Status"    text,
+
+ primary key ("UserId", "Year", "Month", "Day"),
+ foreign key ("UserId") references "User" ("Id") 
+);</value>
   </data>
-  <data name="MorningerBotName" xml:space="preserve">
-    <value>@morningerbot</value>
+  <data name="Entry_Insert" xml:space="preserve">
+    <value>insert into Entry (UserId, Year, Month, Day, Status) 
+values (@UserId, @Year, @Month, @Day, @Status)</value>
   </data>
-  <data name="ThereIsNoStats" xml:space="preserve">
-    <value>Ups, there is no any data</value>
+  <data name="Entry_Select" xml:space="preserve">
+    <value>select * 
+from Entry 
+where UserId = @UserId</value>
   </data>
-  <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome!</value>
+  <data name="User_Insert" xml:space="preserve">
+    <value>insert into User (Id, FirstName, LastName, Username) 
+values (@Id, @FirstName, @LastName, @Username)</value>
   </data>
-  <data name="YouAreNotRegisteredMessage" xml:space="preserve">
-    <value>For registration send /start.</value>
+  <data name="User_Select" xml:space="preserve">
+    <value>select * 
+from User
+where Id = @Id</value>
   </data>
-  <data name="YouAreRegisteredMessage" xml:space="preserve">
-    <value>You are already registered.</value>
+  <data name="User_Update" xml:space="preserve">
+    <value>update User
+set FirstName = @FirstName, 
+    LastName  = @LastName, 
+    Username  = @Username
+where Id = @Id</value>
   </data>
 </root>

@@ -22,14 +22,14 @@ namespace Edomozh.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class Queries {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Queries() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Edomozh.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Edomozh.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Edomozh.Properties.Queries", typeof(Queries).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,84 @@ namespace Edomozh.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You&apos;ve already checked in today..
+        ///   Looks up a localized string similar to create table if not exists &quot;User&quot; (
+        /// &quot;Id&quot;         integer not null primary key,
+        /// &quot;FirstName&quot;  text,
+        /// &quot;LastName&quot;   text,
+        /// &quot;Username&quot;   text
+        ///);
+        ///
+        ///create table if not exists &quot;Entry&quot; (
+        /// &quot;UserId&quot;    integer not null,
+        /// 
+        /// &quot;Year&quot;      integer not null,
+        /// &quot;Month&quot;     integer not null,
+        /// &quot;Day&quot;       integer not null,
+        /// 
+        /// &quot;Status&quot;    text,
+        ///
+        /// primary key (&quot;UserId&quot;, &quot;Year&quot;, &quot;Month&quot;, &quot;Day&quot;),
+        /// foreign key (&quot;UserId&quot;) references &quot;User&quot; (&quot;Id&quot;) 
+        ///);.
         /// </summary>
-        internal static string AlreadyCheckedInMessage {
+        internal static string CreateTables {
             get {
-                return ResourceManager.GetString("AlreadyCheckedInMessage", resourceCulture);
+                return ResourceManager.GetString("CreateTables", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @morningerbot.
+        ///   Looks up a localized string similar to insert into Entry (UserId, Year, Month, Day, Status) 
+        ///values (@UserId, @Year, @Month, @Day, @Status).
         /// </summary>
-        internal static string MorningerBotName {
+        internal static string Entry_Insert {
             get {
-                return ResourceManager.GetString("MorningerBotName", resourceCulture);
+                return ResourceManager.GetString("Entry_Insert", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ups, there is no any data.
+        ///   Looks up a localized string similar to select * 
+        ///from Entry 
+        ///where UserId = @UserId.
         /// </summary>
-        internal static string ThereIsNoStats {
+        internal static string Entry_Select {
             get {
-                return ResourceManager.GetString("ThereIsNoStats", resourceCulture);
+                return ResourceManager.GetString("Entry_Select", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Welcome!.
+        ///   Looks up a localized string similar to insert into User (Id, FirstName, LastName, Username) 
+        ///values (@Id, @FirstName, @LastName, @Username).
         /// </summary>
-        internal static string WelcomeMessage {
+        internal static string User_Insert {
             get {
-                return ResourceManager.GetString("WelcomeMessage", resourceCulture);
+                return ResourceManager.GetString("User_Insert", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For registration send /start..
+        ///   Looks up a localized string similar to select * 
+        ///from User
+        ///where Id = @Id.
         /// </summary>
-        internal static string YouAreNotRegisteredMessage {
+        internal static string User_Select {
             get {
-                return ResourceManager.GetString("YouAreNotRegisteredMessage", resourceCulture);
+                return ResourceManager.GetString("User_Select", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are already registered..
+        ///   Looks up a localized string similar to update User
+        ///set FirstName = @FirstName, 
+        ///    LastName  = @LastName, 
+        ///    Username  = @Username
+        ///where Id = @Id.
         /// </summary>
-        internal static string YouAreRegisteredMessage {
+        internal static string User_Update {
             get {
-                return ResourceManager.GetString("YouAreRegisteredMessage", resourceCulture);
+                return ResourceManager.GetString("User_Update", resourceCulture);
             }
         }
     }

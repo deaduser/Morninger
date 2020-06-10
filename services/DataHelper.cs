@@ -17,17 +17,20 @@ namespace Edomozh
         {
             Console.WriteLine();
             Console.WriteLine(nameof(ProcessMessage));
-            Console.WriteLine($"Time: {DateTime.UtcNow} From: {m.From.Id}\n Message: '{m.Text}'");
+            Console.WriteLine($"Time: {DateTime.UtcNow} From: {m.From.Id}\nMessage: '{m.Text}'");
 
-            var user = SelectUser(m.From);
+            var command = m.Text.Replace(Resources.MorningerBotName, string.Empty);
+
+            if (command == "/start") return CreateUser(m.From);
+
+            var user = UserSelect(m.From);
             if (user == null) return Resources.YouAreNotRegisteredMessage;
 
-            switch (m.Text.Replace(Resources.MorningerBotName, string.Empty))
+            switch (command)
             {
-                case "/done": return ProcessDoneMessage(user);
-                case "/dayoff": return ProcessDayOffMessage(user);
-                case "/start": return CreateUser(m.From);
-                case "/stat": return ProcessStatMessage(user);
+                case "/done": return InsertEntry(user, "done");
+                case "/dayoff": return InsertEntry(user, "dayoff");
+                case "/stat": return GetStatistic(user);
                 default: return ProcessDefaultMessage(user);
             }
         }
@@ -36,7 +39,7 @@ namespace Edomozh
         {
             Console.WriteLine(nameof(CreateUser));
 
-            var checkUser = SelectUser(user);
+            var checkUser = UserSelect(user);
             if (checkUser != null) return Resources.YouAreRegisteredMessage;
 
             var newUser = new User
@@ -44,14 +47,12 @@ namespace Edomozh
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Username = user.Username,
-                LastUpdate = DateTime.UtcNow,
+                Username = user.Username
             };
 
-            newUser.Statistic.Add(new Month(newUser.Id) { LastUpdate = DateTime.MinValue });
+            newUser.Entries.Add(new Entry(newUser.Id));
 
-            dbProvider.InsertUser(newUser);
-            dbProvider.InsertMonth(newUser.Statistic.First());
+            dbProvider.UserInsert(newUser);
 
             return Resources.WelcomeMessage;
         }
@@ -62,57 +63,47 @@ namespace Edomozh
             return string.Empty;
         }
 
-        private string ProcessStatMessage(User user)
+        private string GetStatistic(User user)
         {
-            Console.WriteLine(nameof(ProcessStatMessage));
-            var m = SelectOrCreateCurrentMonth(user);
-            return $"Done: {m.Done}\nUndone: {m.Undone}\nDayOff: {m.DayOff}";
+            Console.WriteLine(nameof(GetStatistic));
+
+            if (user.Entries.Count == 0) return Resources.ThereIsNoStats;
+
+            var m = user.Entries.Where(e => IsThisMonthEntry(e));
+            var done = m.Where(e => e.Status == "done").Count();
+            var dayoff = m.Where(e => e.Status == "dayoff").Count();
+            var undone = DateTime.UtcNow.Day - done - dayoff;
+
+            return $"In this month:\nDone: {done}\nUndone: {undone}\nDayOff: {dayoff}";
         }
 
-        private string ProcessDayOffMessage(User user)
+        private string InsertEntry(User user, string status)
         {
-            Console.WriteLine(nameof(ProcessDayOffMessage));
-            var m = SelectOrCreateCurrentMonth(user);
+            Console.WriteLine(nameof(InsertEntry));
 
-            if (m.LastUpdate.Date == DateTime.UtcNow.Date) return Resources.AlreadyCheckedInMessage;
+            if (user.Entries.Any(s => IsThisMonthEntry(s)))
+                return Resources.AlreadyCheckedInMessage;
 
-            m.DayOff = m.DayOff + 1;
-            m.LastUpdate = DateTime.UtcNow;
-            dbProvider.UpdateMonth(m);
+            var e = new Entry(user.Id) { Status = status };
+            dbProvider.EntryInsert(e);
+
             return string.Empty;
         }
 
-        private string ProcessDoneMessage(User user)
+        private User UserSelect(Telegram.Bot.Types.User user)
         {
-            Console.WriteLine(nameof(ProcessDoneMessage));
-            var m = SelectOrCreateCurrentMonth(user);
-
-            if (m.LastUpdate.Date == DateTime.UtcNow.Date) return Resources.AlreadyCheckedInMessage;
-
-            m.Done = m.Done + 1;
-            m.LastUpdate = DateTime.UtcNow;
-            dbProvider.UpdateMonth(m);
-            return string.Empty;
+            Console.WriteLine(nameof(UserSelect));
+            return dbProvider.UserSelect(user.Id);
         }
 
-        private Month SelectOrCreateCurrentMonth(User user)
+        private bool IsTodayEntry(Entry s)
         {
-            Console.WriteLine(nameof(SelectOrCreateCurrentMonth));
-
-            var m = user.Statistic.Where(s => s.Year == DateTime.UtcNow.Year && s.Number == DateTime.UtcNow.Month).FirstOrDefault();
-            if (m == null)
-            {
-                m = new Month(user.Id);
-                m.LastUpdate = DateTime.MinValue;
-                dbProvider.InsertMonth(m);
-            }
-            return m;
+            return s.Year == DateTime.UtcNow.Year && s.Month == DateTime.UtcNow.Month && s.Day == DateTime.UtcNow.Day;
         }
 
-        private User SelectUser(Telegram.Bot.Types.User tUser)
+        private bool IsThisMonthEntry(Entry s)
         {
-            Console.WriteLine(nameof(SelectUser));
-            return dbProvider.SelectUser(tUser.Id);
+            return s.Year == DateTime.UtcNow.Year && s.Month == DateTime.UtcNow.Month;
         }
     }
 }
