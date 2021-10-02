@@ -1,23 +1,15 @@
-namespace Edomozh
+﻿namespace CompetitorsBot.Bot.Models
 {
-    using System;
     using System.Collections.Generic;
 
-    internal class User
+    public class User : DbObject
     {
-        internal User()
-        {
-            Entries = new List<Entry>();
-        }
-
-        public long Id { get; set; }
-
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
 
         public string Username { get; set; }
 
-        public List<Entry> Entries { get; set; }
+        public List<Entry> Entries { get; set; } = new List<Entry>();
     }
 }

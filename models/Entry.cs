@@ -1,24 +1,8 @@
-namespace Edomozh
+﻿namespace CompetitorsBot.Bot.Models
 {
-    using System;
-
-    internal class Entry
+    public class Entry : DbObject
     {
-        internal Entry(long userId)
-        {
-            UserId = userId;
-            Year = DateTime.UtcNow.Year;
-            Month = DateTime.UtcNow.Month;
-            Day = DateTime.UtcNow.Day;
-        }
-
-        public long UserId { get; set; }
-
-        public int Year { get; set; }
-
-        public int Month { get; set; }
-
-        public int Day { get; set; }
+        public User User { get; set; }
 
         public string Status { get; set; }
     }

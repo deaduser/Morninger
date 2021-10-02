@@ -1,4 +1,4 @@
-namespace Edomozh
+namespace CompetitorsBot.Bot.Services
 {
     using System;
     using System.Linq;

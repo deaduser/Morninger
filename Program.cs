@@ -1,18 +1,44 @@
-﻿namespace Edomozh
+﻿namespace CompetitorsBot.Bot
 {
     using System.Net;
     using System;
     using Telegram.Bot.Args;
     using Telegram.Bot;
+    using System.Linq;
+    using CompetitorsBot.Bot.Models;
 
     public class Program
     {
         private static ITelegramBotClient telegramBot;
-        private static DataHelper dataHelper;
 
         public static void Main(string[] args)
         {
-            dataHelper = InitMorninger(InitDataBase(args[0]));
+            using (var db = new CompetitorsBotContext())
+            {
+                // Note: This sample requires the database to be created before running.
+
+                // Create
+                Console.WriteLine("Inserting a new blog");
+                db.Add(new User { FirstName = "Kavya" });
+                db.SaveChanges();
+
+                // Read
+                Console.WriteLine("Querying for a blog");
+                var entity = db.Users.OrderBy(b => b.FirstName).First();
+
+                // Update
+                Console.WriteLine("Updating the blog and adding a post");
+                entity.FirstName = "https://devblogs.microsoft.com/dotnet";
+                entity.Entries.Add(new Entry { Status = "Hello World" });
+                db.SaveChanges();
+
+                // Delete
+                Console.WriteLine("Delete the blog");
+                db.Remove(entity);
+                db.SaveChanges();
+            }
+
+            //dataHelper = InitMorninger(InitDataBase(args[0]));
             telegramBot = InitTelegramBot(InitProxy(args[1]), args[2]);
             while (Console.ReadLine() != "exit") ;
         }
@@ -24,7 +50,7 @@
             try
             {
                 if (e.Message.Text == null && e.Message.Text == string.Empty) return;
-                var answer = dataHelper.ProcessMessage(e.Message);
+                var answer = ""; //dataHelper.ProcessMessage(e.Message);
 
                 if (answer == string.Empty) return;
                 telegramBot.SendTextMessageAsync(e.Message.Chat.Id, answer);
@@ -37,17 +63,17 @@
 
         #region Init
 
-        private static SQLiteProvider InitDataBase(string path)
-        {
-            Console.WriteLine(nameof(InitDataBase));
-            return new SQLiteProvider();
-        }
+        //private static SQLiteProvider InitDataBase(string path)
+        //{
+        //    Console.WriteLine(nameof(InitDataBase));
+        //    return new SQLiteProvider();
+        //}
 
-        private static DataHelper InitMorninger(SQLiteProvider db)
-        {
-            Console.WriteLine(nameof(InitMorninger));
-            return new DataHelper(db);
-        }
+        //private static DataHelper InitMorninger(SQLiteProvider db)
+        //{
+        //    Console.WriteLine(nameof(InitMorninger));
+        //    return new DataHelper(db);
+        //}
 
         private static IWebProxy InitProxy(string address)
         {
